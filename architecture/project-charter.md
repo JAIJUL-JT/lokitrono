@@ -377,3 +377,25 @@ Plain Text
 1 Analizar repositorio
 
 2 Detectar tablas existentes
+3 Detectar relaciones existentes
+
+4 Comparar con nueva arquitectura
+
+5 Generar migración incremental
+
+6 Nunca generar migración destructiva
+Configuración OpenCode
+OpenCode debe:
+Plain Text
+Recibir tareas
+
+Implementar
+
+Crear PR
+
+Generar documentación
+
+Generar tests
+
+Nunca modificar arquitectura
+Yo haría esto primero y no la plataforma completa de una sola vez. El proyecto ya tiene suficiente complejidad para trabajar en iteraciones seguras alineadas con el objetivo de campañas, turismo, comercio y eventos descrito
