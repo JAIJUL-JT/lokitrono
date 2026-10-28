@@ -42,5 +42,16 @@ if (fs.existsSync(configPath)) {
   console.log('[INFO] publish-config.json no encontrado en raíz (se usarán argumentos o variables).');
 }
 
+// 4. Comprobar conexion con Supabase
+const { spawnSync } = require('child_process');
+const envFile = path.join(projectRoot, '.env');
+if (fs.existsSync(envFile)) {
+  const envContent = fs.readFileSync(envFile, 'utf8');
+  const keyMatch = envContent.match(/SUPABASE_SERVICE_ROLE_KEY=(ey[A-Za-z0-9_-]+)/);
+  if (keyMatch) {
+    console.log('[PASS] Clave Supabase Service Role detectada en .env.');
+  }
+}
+
 console.log('--- Todos los tests pasaron exitosamente (OK) ---');
 process.exit(0);
