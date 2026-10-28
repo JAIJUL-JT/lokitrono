@@ -1,0 +1,1 @@
+Informes generados por OpenCode.
