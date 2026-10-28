@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LokiTrono Platform &bull; Turismo, Eventos y Rutas</title>
-  <!-- Tailwind CSS CDN para diseño moderno y estilizado -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -52,9 +52,23 @@
         </button>
       </div>
       <div class="flex items-center space-x-3">
+        <!-- Puntos -->
         <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
           <i class="fa-solid fa-coins text-amber-400"></i> <span id="userPoints">250</span> pts
         </span>
+        
+        <!-- ESTADO DE SESIÓN / BOTÓN DE LOGIN -->
+        <div id="authContainer">
+          <button onclick="openLoginModal()" id="btnLogin" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-full transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-user"></i> <span>Iniciar Sesión</span>
+          </button>
+          <div id="userProfile" class="hidden flex items-center gap-2">
+            <span id="userName" class="text-xs font-semibold text-slate-200"></span>
+            <button onclick="logout()" title="Cerrar Sesión" class="text-slate-400 hover:text-red-400 text-xs transition">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -93,7 +107,6 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="routesGrid">
-        <!-- Tarjeta 1 -->
         <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="costa acantilados naturaleza senderismo">
           <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80')">
             <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Naturaleza</span>
@@ -115,7 +128,6 @@
           </div>
         </div>
 
-        <!-- Tarjeta 2 -->
         <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="gastronomia tapas vino comercio hosteleria">
           <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80')">
             <span class="absolute top-3 right-3 bg-amber-600/90 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Gastronomía</span>
@@ -137,7 +149,6 @@
           </div>
         </div>
 
-        <!-- Tarjeta 3 -->
         <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="patrimonio historia monumentos cultura museo">
           <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80')">
             <span class="absolute top-3 right-3 bg-indigo-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Patrimonio</span>
@@ -300,7 +311,39 @@
 
   </main>
 
-  <!-- MODAL INFORMATIVO -->
+  <!-- MODAL DE INICIO DE SESIÓN -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-sky-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-black">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">Iniciar Sesión</h3>
+        <p class="text-xs text-slate-500">Accede con tu usuario o PIN de participante</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono o Identificador</label>
+          <input type="text" id="loginIdentifier" placeholder="Ej: 600123456 o usuario" required class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500 transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Código PIN / Clave</label>
+          <input type="password" id="loginPin" placeholder="PIN de 4 dígitos" required class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500 transition">
+        </div>
+        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
+          <span>Acceder a la Plataforma</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+      <p class="text-center text-xs text-slate-400 mt-4">
+        ¿Participante temporal? Puedes navegar sin cuenta como invitado.
+      </p>
+    </div>
+  </div>
+
+  <!-- MODAL INFORMATIVO GENERAL -->
   <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -320,8 +363,23 @@
     <p class="text-slate-500">Módulos activos: Plantillas &bull; Entidades &bull; Event Hub &bull; Gamificación &bull; Rutas y POIs &bull; Marketplace</p>
   </footer>
 
-  <!-- LÓGICA DE INTERACTIVIDAD -->
+  <!-- LÓGICA DE INTERACTIVIDAD Y AUTENTICACIÓN -->
   <script>
+    // Comprobar sesión al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      checkStoredSession();
+    });
+
+    function checkStoredSession() {
+      const user = localStorage.getItem('lokitrono_user');
+      if (user) {
+        try {
+          const userData = JSON.parse(user);
+          setAuthenticatedState(userData.name || userData.phone || 'Usuario');
+        } catch(e) {}
+      }
+    }
+
     function switchTab(tabId) {
       const sections = ['turismo', 'eventos', 'misiones', 'marketplace'];
       sections.forEach(s => {
@@ -345,6 +403,46 @@
 
     function closeModal() {
       document.getElementById('infoModal').classList.add('hidden');
+    }
+
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const identifier = document.getElementById('loginIdentifier').value.trim();
+      const pin = document.getElementById('loginPin').value.trim();
+
+      if (!identifier || !pin) {
+        alert('Por favor introduce tu identificador y PIN');
+        return;
+      }
+
+      // Simular login exitoso y guardar sesión local
+      const userData = { phone: identifier, name: identifier.split('@')[0], loggedAt: new Date().toISOString() };
+      localStorage.setItem('lokitrono_user', JSON.stringify(userData));
+      setAuthenticatedState(userData.name);
+      closeLoginModal();
+      openModal('¡Sesión Iniciada!', `Bienvenido de nuevo, ${userData.name}. Ya tienes acceso completo a tus misiones y votaciones.`);
+    }
+
+    function setAuthenticatedState(userName) {
+      document.getElementById('btnLogin').classList.add('hidden');
+      const profile = document.getElementById('userProfile');
+      profile.classList.remove('hidden');
+      document.getElementById('userName').innerHTML = `<i class="fa-solid fa-circle-user text-sky-400 mr-1"></i> ${userName}`;
+    }
+
+    function logout() {
+      localStorage.removeItem('lokitrono_user');
+      document.getElementById('btnLogin').classList.remove('hidden');
+      document.getElementById('userProfile').classList.add('hidden');
+      openModal('Sesión Cerrada', 'Has cerrado tu sesión correctamente.');
     }
 
     function filterContent() {
