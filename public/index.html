@@ -3,260 +3,385 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lokitrono - Portal de Turismo</title>
-  <style>
-    :root {
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --accent: #f59e0b;
+  <title>LokiTrono Platform &bull; Turismo, Eventos y Rutas</title>
+  <!-- Tailwind CSS CDN para diseño moderno y estilizado -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    header {
-      background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
-      color: white;
-      padding: 4rem 1.5rem;
-      text-align: center;
-    }
-    header h1 {
-      font-size: 2.75rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      letter-spacing: -0.025em;
-    }
-    header p {
-      font-size: 1.25rem;
-      opacity: 0.9;
-      max-width: 650px;
-      margin: 0 auto 2rem;
-    }
-    .search-bar {
-      max-width: 550px;
-      margin: 0 auto;
-      display: flex;
-      gap: 0.5rem;
-      background: white;
-      padding: 0.5rem;
-      border-radius: 9999px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-    }
-    .search-bar input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0.75rem 1.25rem;
-      font-size: 1rem;
-      border-radius: 9999px;
-      color: var(--text);
-    }
-    .search-bar button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.75rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .search-bar button:hover {
-      background: var(--primary-dark);
-    }
-    main {
-      max-width: 1200px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
-    }
-    .section-title {
-      font-size: 1.85rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 2rem;
-      margin-bottom: 4rem;
-    }
-    .card {
-      background: var(--card-bg);
-      border-radius: 1rem;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid #e2e8f0;
-      display: flex;
-      flex-direction: column;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1);
-    }
-    .card-img {
-      height: 200px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(4px);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .card-content {
-      padding: 1.5rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .card-content h3 {
-      font-size: 1.35rem;
-      margin-bottom: 0.5rem;
-    }
-    .card-content p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.25rem;
-      flex: 1;
-    }
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 1rem;
-      border-top: 1px solid #f1f5f9;
-    }
-    .rating {
-      color: var(--accent);
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    .btn-detail {
-      background: #f1f5f9;
-      color: var(--text);
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn-detail:hover {
-      background: var(--primary);
-      color: white;
-    }
-    footer {
-      background: #0f172a;
-      color: #94a3b8;
-      text-align: center;
-      padding: 2.5rem 1.5rem;
-      margin-top: 4rem;
-    }
-  </style>
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
 
-  <header>
-    <h1>Descubre Lokitrono Turismo</h1>
-    <p>Guía interactiva de rutas, gastronomía, naturaleza y experiencias locales inolvidables.</p>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Buscar destino, experiencia o actividad..." oninput="filterDestinations()">
-      <button onclick="filterDestinations()">Explorar</button>
+  <!-- BARRA DE NAVEGACIÓN -->
+  <nav class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-amber-400">
+          <i class="fa-solid fa-crown mr-2 text-amber-400"></i>LokiTrono
+        </span>
+        <span class="text-xs bg-sky-950 text-sky-300 px-2 py-0.5 rounded-full border border-sky-800 font-medium">Platform 2.0</span>
+      </div>
+      <div class="hidden md:flex space-x-6 text-sm font-medium">
+        <button onclick="switchTab('turismo')" id="tab-turismo" class="nav-btn text-sky-400 border-b-2 border-sky-400 pb-1">
+          <i class="fa-solid fa-map-location-dot mr-1"></i> Rutas y POIs
+        </button>
+        <button onclick="switchTab('eventos')" id="tab-eventos" class="nav-btn text-slate-300 hover:text-white pb-1">
+          <i class="fa-solid fa-calendar-days mr-1"></i> Event Hub
+        </button>
+        <button onclick="switchTab('misiones')" id="tab-misiones" class="nav-btn text-slate-300 hover:text-white pb-1">
+          <i class="fa-solid fa-trophy mr-1"></i> Gamificación & Misiones
+        </button>
+        <button onclick="switchTab('marketplace')" id="tab-marketplace" class="nav-btn text-slate-300 hover:text-white pb-1">
+          <i class="fa-solid fa-store mr-1"></i> Marketplace
+        </button>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-coins text-amber-400"></i> <span id="userPoints">250</span> pts
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white py-12 px-4 shadow-inner">
+    <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+        Descubre, Participa y Conecta
+      </h1>
+      <p class="text-slate-300 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
+        Plataforma configurable de rutas turísticas, agenda cultural de eventos y misiones gamificadas para el comercio y patrimonio local.
+      </p>
+      <!-- BUSCADOR INTERACTIVO -->
+      <div class="bg-white rounded-full p-2 flex items-center max-w-xl mx-auto shadow-2xl">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 ml-4 mr-2"></i>
+        <input type="text" id="mainSearch" oninput="filterContent()" placeholder="Buscar rutas, monumentos, eventos o comercios..." class="w-full text-slate-800 outline-none text-sm px-2">
+        <button onclick="filterContent()" class="bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition shadow">
+          Explorar
+        </button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <h2 class="section-title">Destinos y Experiencias Populares</h2>
-    <div class="grid" id="destinationsGrid">
-      <!-- Tarjeta 1 -->
-      <article class="card" data-title="Costa y Acantilados del Norte" data-tag="Naturaleza">
-        <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80');">
-          <span class="badge">Naturaleza</span>
-        </div>
-        <div class="card-content">
-          <h3>Costa y Acantilados</h3>
-          <p>Senderismo costero con vistas panorámicas, calas vírgenes y atardeceres sobre el océano.</p>
-          <div class="card-footer">
-            <span class="rating">★ 4.9 (128)</span>
-            <a href="#" class="btn-detail">Ver ruta</a>
-          </div>
-        </div>
-      </article>
+  <!-- CONTENIDO PRINCIPAL DINÁMICO -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
 
-      <!-- Tarjeta 2 -->
-      <article class="card" data-title="Ruta Gastronómica Tradicional" data-tag="Gastronomía">
-        <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80');">
-          <span class="badge">Gastronomía</span>
+    <!-- SECCIÓN 1: RUTAS Y POIS (Fase 5) -->
+    <section id="section-turismo">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">Rutas Turísticas y Patrimoniales</h2>
+          <p class="text-sm text-slate-500">Recorridos guiados interactivos con audioguías y paradas geolocalizadas</p>
         </div>
-        <div class="card-content">
-          <h3>Ruta Gastronómica</h3>
-          <p>Degustación de platos tradicionales, mariscos frescos de lonja y vinos de denominación de origen.</p>
-          <div class="card-footer">
-            <span class="rating">★ 4.8 (94)</span>
-            <a href="#" class="btn-detail">Ver ruta</a>
-          </div>
-        </div>
-      </article>
+        <span class="text-xs bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-medium">Fase 5 Active</span>
+      </div>
 
-      <!-- Tarjeta 3 -->
-      <article class="card" data-title="Casco Histórico y Monumentos" data-tag="Cultura">
-        <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80');">
-          <span class="badge">Cultura</span>
-        </div>
-        <div class="card-content">
-          <h3>Casco Histórico</h3>
-          <p>Calles empedradas, arquitectura renacentista, museos y leyendas locales guiadas por historiadores.</p>
-          <div class="card-footer">
-            <span class="rating">★ 4.7 (210)</span>
-            <a href="#" class="btn-detail">Ver ruta</a>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="routesGrid">
+        <!-- Tarjeta 1 -->
+        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="costa acantilados naturaleza senderismo">
+          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80')">
+            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Naturaleza</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+              <span><i class="fa-solid fa-person-walking mr-1 text-sky-500"></i> 4.5 km</span>
+              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 90 min</span>
+              <span class="text-emerald-600 font-semibold">Fácil</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Ruta de los Acantilados y Miradores</h3>
+            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Recorrido por la costa escarpada con vistas a calas protegidas y flora autóctona.</p>
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.9 (142)</span>
+              <button onclick="openModal('Ruta de los Acantilados', '4 paradas con audioguía disponible. 50 puntos al completarla.')" class="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold px-3 py-1.5 rounded-lg transition">
+                Ver Paradas
+              </button>
+            </div>
           </div>
         </div>
-      </article>
-    </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="gastronomia tapas vino comercio hosteleria">
+          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80')">
+            <span class="absolute top-3 right-3 bg-amber-600/90 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Gastronomía</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+              <span><i class="fa-solid fa-utensils mr-1 text-amber-500"></i> 6 Locales</span>
+              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 120 min</span>
+              <span class="text-emerald-600 font-semibold">Fácil</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Concurso y Ruta de Tapas Locales</h3>
+            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Degustación de productos de lonja y maridaje con votos en tiempo real de tapas participantes.</p>
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.8 (89)</span>
+              <button onclick="openModal('Ruta de Tapas', '6 establecimientos adheridos. Degusta y vota tu favorito.')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-lg transition">
+                Ver Locales
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3 -->
+        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="patrimonio historia monumentos cultura museo">
+          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80')">
+            <span class="absolute top-3 right-3 bg-indigo-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Patrimonio</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+              <span><i class="fa-solid fa-landmark mr-1 text-indigo-500"></i> 8 Monumentos</span>
+              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 105 min</span>
+              <span class="text-emerald-600 font-semibold">Fácil</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Circuito del Casco Histórico</h3>
+            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Explora palacios, torres defensivas y plazas medievales con cuestionarios interactivos.</p>
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.7 (230)</span>
+              <button onclick="openModal('Circuito Histórico', 'Incluye mapa descargable y audioguías en español e inglés.')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold px-3 py-1.5 rounded-lg transition">
+                Ver Circuito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: EVENT HUB (Fase 3) -->
+    <section id="section-eventos" class="hidden">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">Agenda Cultural y Event Hub</h2>
+          <p class="text-sm text-slate-500">Eventos agregados de fuentes municipales, asociaciones y agendas externas</p>
+        </div>
+        <span class="text-xs bg-sky-100 text-sky-800 px-3 py-1 rounded-full font-medium">Fase 3 Active</span>
+      </div>
+
+      <div class="space-y-4" id="eventsList">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-slate-300 transition">
+          <div class="flex items-start gap-4">
+            <div class="bg-sky-50 text-sky-600 p-3 rounded-xl text-center min-w-[64px]">
+              <span class="block text-xs uppercase font-extrabold tracking-wider">NOV</span>
+              <span class="block text-2xl font-black">07</span>
+            </div>
+            <div>
+              <span class="text-xs font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">Música en Vivo</span>
+              <h3 class="text-lg font-bold text-slate-900 mt-1">Concierto Acústico en la Plaza Mayor</h3>
+              <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i> Plaza Central &bull; 20:30 h &bull; Acceso Libre</p>
+            </div>
+          </div>
+          <button onclick="claimMission('Asistencia a Concierto Acústico', 40)" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-qrcode"></i> Check-in (+40 pts)
+          </button>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-slate-300 transition">
+          <div class="flex items-start gap-4">
+            <div class="bg-amber-50 text-amber-600 p-3 rounded-xl text-center min-w-[64px]">
+              <span class="block text-xs uppercase font-extrabold tracking-wider">NOV</span>
+              <span class="block text-2xl font-black">12</span>
+            </div>
+            <div>
+              <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Feria y Comercio</span>
+              <h3 class="text-lg font-bold text-slate-900 mt-1">Mercado de Artesanos y Productores Km 0</h3>
+              <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i> Paseo Marítimo &bull; 10:00 - 18:00 h</p>
+            </div>
+          </div>
+          <button onclick="claimMission('Visita Mercado Artesanos', 30)" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-qrcode"></i> Check-in (+30 pts)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: GAMIFICACIÓN Y MISIONES (Fase 4) -->
+    <section id="section-misiones" class="hidden">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">Misiones Activas y Desafíos</h2>
+          <p class="text-sm text-slate-500">Completa objetivos en la ciudad para ganar puntos y canjear recompensas</p>
+        </div>
+        <span class="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">Fase 4 Active</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">Misión de Visita</span>
+              <span class="text-amber-500 font-extrabold text-sm"><i class="fa-solid fa-coins"></i> +50 pts</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Visita el Mirador del Faro</h3>
+            <p class="text-sm text-slate-600 mb-4">Acércate a menos de 50 metros del faro para validar tu posición por GPS o escanear el tótem QR.</p>
+          </div>
+          <button onclick="simulateCheckin('Mirador del Faro', 50)" class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-location-crosshairs"></i> Validar Posición GPS
+          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full font-bold">Comercio Local</span>
+              <span class="text-amber-500 font-extrabold text-sm"><i class="fa-solid fa-coins"></i> +75 pts</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Compra en Establecimiento Adherido</h3>
+            <p class="text-sm text-slate-600 mb-4">Solicita tu código PIN al consumir en los comercios de la ruta gastronómica.</p>
+          </div>
+          <button onclick="promptPin()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-key"></i> Canjear Código PIN
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: MARKETPLACE DE PLANTILLAS (Fase 6) -->
+    <section id="section-marketplace" class="hidden">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">Marketplace de Plantillas</h2>
+          <p class="text-sm text-slate-500">Soluciones listas para desplegar en tu municipio, asociación o concurso</p>
+        </div>
+        <span class="text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">Fase 6 Active</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-wine-glass"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-slate-900">Pack Ruta Gastronómica</h3>
+              <span class="text-xs text-slate-400">Versión 1.0.0 &bull; Oficial</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-600 mb-4">Votación en tiempo real de tapas y restaurantes, mapa de establecimientos y recompensas por degustación.</p>
+          <div class="flex gap-2">
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Hostelería</span>
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Votos</span>
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Comercio</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-monument"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-slate-900">Pack Gymkana Patrimonial</h3>
+              <span class="text-xs text-slate-400">Versión 1.0.0 &bull; Oficial</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-600 mb-4">Itinerario histórico con audioguías geolocalizadas, preguntas de trivia y sellos virtuales coleccionables.</p>
+          <div class="flex gap-2">
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Cultura</span>
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Educación</span>
+            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Turismo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <footer>
-    <p>&copy; 2026 Lokitrono Turismo &bull; Conectado a Supabase y Vercel</p>
+  <!-- MODAL INFORMATIVO -->
+  <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modalTitle" class="text-xl font-bold text-slate-900"></h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <p id="modalDesc" class="text-sm text-slate-600 mb-6"></p>
+      <button onclick="closeModal()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-slate-800 transition">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 text-slate-400 py-8 px-4 border-t border-slate-900 mt-auto text-center text-xs">
+    <p class="mb-2">&copy; 2026 LokiTrono Platform &bull; Conectado a Supabase (Backend) & Vercel (Hosting)</p>
+    <p class="text-slate-500">Módulos activos: Plantillas &bull; Entidades &bull; Event Hub &bull; Gamificación &bull; Rutas y POIs &bull; Marketplace</p>
   </footer>
 
+  <!-- LÓGICA DE INTERACTIVIDAD -->
   <script>
-    function filterDestinations() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('#destinationsGrid .card');
+    function switchTab(tabId) {
+      const sections = ['turismo', 'eventos', 'misiones', 'marketplace'];
+      sections.forEach(s => {
+        const secEl = document.getElementById('section-' + s);
+        const tabEl = document.getElementById('tab-' + s);
+        if (s === tabId) {
+          secEl.classList.remove('hidden');
+          tabEl.className = 'nav-btn text-sky-400 border-b-2 border-sky-400 pb-1 font-semibold';
+        } else {
+          secEl.classList.add('hidden');
+          tabEl.className = 'nav-btn text-slate-300 hover:text-white pb-1 font-medium';
+        }
+      });
+    }
+
+    function openModal(title, desc) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalDesc').innerText = desc;
+      document.getElementById('infoModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('infoModal').classList.add('hidden');
+    }
+
+    function filterContent() {
+      const query = document.getElementById('mainSearch').value.toLowerCase();
+      const cards = document.querySelectorAll('.card-item');
       cards.forEach(card => {
-        const title = card.getAttribute('data-title').toLowerCase();
-        const tag = card.getAttribute('data-tag').toLowerCase();
-        if (title.includes(q) || tag.includes(q)) {
-          card.style.display = 'flex';
+        const keywords = card.getAttribute('data-keywords') || '';
+        const text = card.innerText.toLowerCase();
+        if (text.includes(query) || keywords.includes(query)) {
+          card.style.display = '';
         } else {
           card.style.display = 'none';
         }
       });
+    }
+
+    function simulateCheckin(place, points) {
+      const ptsSpan = document.getElementById('userPoints');
+      const current = parseInt(ptsSpan.innerText);
+      ptsSpan.innerText = current + points;
+      openModal('¡Check-in Completado!', `Has validado tu visita a "${place}". Se han sumado +${points} puntos a tu cuenta.`);
+    }
+
+    function claimMission(title, points) {
+      const ptsSpan = document.getElementById('userPoints');
+      const current = parseInt(ptsSpan.innerText);
+      ptsSpan.innerText = current + points;
+      openModal('¡Misión Validada!', `Has participado en "${title}". Has recibido +${points} puntos.`);
+    }
+
+    function promptPin() {
+      const pin = prompt('Introduce el código PIN de tu establecimiento:');
+      if (pin && pin.trim().length >= 4) {
+        simulateCheckin('Comercio Local Adherido', 75);
+      } else if (pin) {
+        alert('Código PIN no válido. Debe tener al menos 4 dígitos.');
+      }
     }
   </script>
 </body>
