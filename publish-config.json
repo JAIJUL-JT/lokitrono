@@ -1,6 +1,6 @@
 {
   "github": {
-    "owner": "usuario",
+    "owner": "afjbilbao",
     "repo": "lokitrono"
   },
   "supabase": {
@@ -10,7 +10,7 @@
     "project": "lokitrono-frontend"
   },
   "notifications": {
-    "email": "usuario@example.com"
+    "email": "afjbilbao@gmail.com"
   },
   "backup": {
     "service": "drive",

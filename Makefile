@@ -12,7 +12,7 @@ test:
 
 # Orquesta el pipeline completo de publicación
 publish: test
-	@cd $(SKILL_PATH) && (bun publish-webapp.js 2>nul || node publish-webapp.js)
+	@cd $(SKILL_PATH) && (bun publish-webapp.js --notify-email afjbilbao@gmail.com 2>nul || node publish-webapp.js --notify-email afjbilbao@gmail.com)
 
 # Instalación / preparación de dependencias
 ci:
