@@ -1,183 +1,126 @@
-﻿-- MIGRACION FASE 1: Sistema de Plantillas y Fundamentos de Campana
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
+-- ==============================================================================
+-- LOKITRONO PLATFORM - MIGRACION COMPLETA ADITIVA (FASES 1 A 6)
+-- Compatible 100% con PostgreSQL / Supabase
+-- ==============================================================================
 
 -- 1. TABLA templates
-create table if not exists templates (
-  id uuid primary key default gen_random_uuid(),
-  code text unique not null,
-  name text not null,
+CREATE TABLE IF NOT EXISTS public.templates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  code text UNIQUE NOT NULL,
+  name text NOT NULL,
   description text,
   category text,
-  default_config jsonb default '{}'::jsonb,
-  is_active boolean default true,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  default_config jsonb DEFAULT '{}'::jsonb,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
-
-create index if not exists idx_templates_code on templates(code);
+CREATE INDEX IF NOT EXISTS idx_templates_code ON public.templates(code);
 
 -- 2. TABLA campaigns
-create table if not exists campaigns (
-  id uuid primary key default gen_random_uuid(),
-  template_id uuid not null references templates(id),
-  code text unique not null,
-  name text not null,
+CREATE TABLE IF NOT EXISTS public.campaigns (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  template_id uuid NOT NULL REFERENCES public.templates(id),
+  code text UNIQUE NOT NULL,
+  name text NOT NULL,
   description text,
-  status text default 'draft',
+  status text DEFAULT 'draft',
   starts_at timestamptz,
   ends_at timestamptz,
   organization_name text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
-
-create index if not exists idx_campaigns_template on campaigns(template_id);
-create index if not exists idx_campaigns_code on campaigns(code);
+CREATE INDEX IF NOT EXISTS idx_campaigns_template ON public.campaigns(template_id);
+CREATE INDEX IF NOT EXISTS idx_campaigns_code ON public.campaigns(code);
 
 -- 3. TABLA campaign_theme (Marca Blanca)
-create table if not exists campaign_theme (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid unique not null references campaigns(id) on delete cascade,
+CREATE TABLE IF NOT EXISTS public.campaign_theme (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid UNIQUE NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
   logo_url text,
   banner_url text,
-  primary_color text default '#0284c7',
-  secondary_color text default '#0f172a',
-  background_color text default '#f8fafc',
+  primary_color text DEFAULT '#0284c7',
+  secondary_color text DEFAULT '#0f172a',
+  background_color text DEFAULT '#f8fafc',
   custom_css text,
-  updated_at timestamptz default now()
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 4. TABLA campaign_settings
-create table if not exists campaign_settings (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid unique not null references campaigns(id) on delete cascade,
-  login_required boolean default false,
-  show_ranking boolean default true,
-  show_rewards boolean default true,
-  show_history boolean default true,
-  public_results boolean default true,
-  max_votes integer default 1,
-  settings jsonb default '{}'::jsonb,
-  updated_at timestamptz default now()
+CREATE TABLE IF NOT EXISTS public.campaign_settings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid UNIQUE NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  login_required boolean DEFAULT false,
+  show_ranking boolean DEFAULT true,
+  show_rewards boolean DEFAULT true,
+  show_history boolean DEFAULT true,
+  public_results boolean DEFAULT true,
+  max_votes integer DEFAULT 1,
+  settings jsonb DEFAULT '{}'::jsonb,
+  updated_at timestamptz DEFAULT now()
 );
 
--- 5. SEMILLAS DE DATOS INICIALES
-insert into templates (code, name, category, description)
-values
-  ('BARRIOS', 'LokiTrono Barrios', 'competition', 'Competicion tradicional de barrios y gamificacion'),
-  ('TURISMO', 'Portal Turismo y Rutas', 'tourism', 'Guia de experiencias, patrimonio, gastronomia y rutas locales'),
-  ('ESCAPARATES', 'Concurso de Escaparates', 'competition', 'Votacion popular de comercio y escaparates'),
-  ('EVENT_HUB', 'Portal de Eventos', 'events', 'Agregador de agenda cultural y eventos')
-on conflict (code) do nothing;
-
--- 6. RLS Y POLITICAS DE SEGURIDAD
-alter table templates enable row level security;
-alter table campaigns enable row level security;
-alter table campaign_theme enable row level security;
-alter table campaign_settings enable row level security;
-
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Templates publicos activos son legibles por todos') then
-    create policy  Templates publicos activos son legibles por todos on templates for select using (is_active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Campanas activas son legibles por todos') then
-    create policy Campanas activas son legibles por todos on campaigns for select using (status in ('active', 'completed'));
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Temas de campanas son legibles publicamente') then
-    create policy Temas de campanas son legibles publicamente on campaign_theme for select using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Ajustes de campanas son legibles publicamente') then
-    create policy Ajustes de campanas son legibles publicamente on campaign_settings for select using (true);
-  end if;
-end ;
--- MIGRACION FASE 2: Entidades Dinamicas y Recompensas de Campana
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
-
--- 1. TABLA campaign_entities
-create table if not exists campaign_entities (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid not null references campaigns(id) on delete cascade,
-  name text not null,
+-- 5. TABLA campaign_entities (Entidades, Comercios, Monumentos)
+CREATE TABLE IF NOT EXISTS public.campaign_entities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  name text NOT NULL,
   description text,
   image_url text,
-  entity_type text not null,
+  entity_type text NOT NULL,
   category text,
   address text,
   latitude double precision,
   longitude double precision,
-  metadata jsonb default '{}'::jsonb,
-  active boolean default true,
-  display_order integer default 0,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  metadata jsonb DEFAULT '{}'::jsonb,
+  active boolean DEFAULT true,
+  display_order integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_campaign_entities_campaign ON public.campaign_entities(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_campaign_entities_type ON public.campaign_entities(entity_type);
 
-create index if not exists idx_campaign_entities_campaign on campaign_entities(campaign_id);
-create index if not exists idx_campaign_entities_type on campaign_entities(entity_type);
-
--- 2. TABLA campaign_rewards
-create table if not exists campaign_rewards (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid not null references campaigns(id) on delete cascade,
-  title text not null,
+-- 6. TABLA campaign_rewards
+CREATE TABLE IF NOT EXISTS public.campaign_rewards (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  title text NOT NULL,
   description text,
-  reward_type text default 'badge',
-  points_required integer default 0,
+  reward_type text DEFAULT 'badge',
+  points_required integer DEFAULT 0,
   stock integer,
   image_url text,
-  metadata jsonb default '{}'::jsonb,
-  is_active boolean default true,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  metadata jsonb DEFAULT '{}'::jsonb,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_campaign_rewards_campaign ON public.campaign_rewards(campaign_id);
 
-create index if not exists idx_campaign_rewards_campaign on campaign_rewards(campaign_id);
-
--- 3. RLS Y POLITICAS DE SEGURIDAD
-alter table campaign_entities enable row level security;
-alter table campaign_rewards enable row level security;
-
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Entidades activas son legibles publicamente') then
-    create policy  Entidades activas son legibles publicamente on campaign_entities for select using (active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Recompensas activas son legibles publicamente') then
-    create policy Recompensas activas son legibles publicamente on campaign_rewards for select using (is_active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins pueden gestionar entidades') then
-    create policy Superadmins pueden gestionar entidades on campaign_entities for all to authenticated using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins pueden gestionar recompensas') then
-    create policy Superadmins pueden gestionar recompensas on campaign_rewards for all to authenticated using (true);
-  end if;
-end ;
--- MIGRACION FASE 3: Event Hub y Fuentes Externas
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
-
--- 1. TABLA external_event_sources
-create table if not exists external_event_sources (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  source_type text not null,
+-- 7. TABLA external_event_sources
+CREATE TABLE IF NOT EXISTS public.external_event_sources (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  source_type text NOT NULL,
   api_endpoint text,
   feed_url text,
-  auth_config jsonb default '{}'::jsonb,
-  sync_frequency_minutes integer default 360,
-  is_active boolean default true,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  auth_config jsonb DEFAULT '{}'::jsonb,
+  sync_frequency_minutes integer DEFAULT 360,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
--- 2. TABLA hub_events (Protege la tabla preexistente 'eventos')
-create table if not exists hub_events (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid references campaigns(id) on delete set null,
-  source_id uuid references external_event_sources(id) on delete set null,
-  title text not null,
+-- 8. TABLA hub_events (Event Hub independiente)
+CREATE TABLE IF NOT EXISTS public.hub_events (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid REFERENCES public.campaigns(id) ON DELETE SET NULL,
+  source_id uuid REFERENCES public.external_event_sources(id) ON DELETE SET NULL,
+  title text NOT NULL,
   description text,
-  start_date timestamptz not null,
+  start_date timestamptz NOT NULL,
   end_date timestamptz,
   location_name text,
   address text,
@@ -186,321 +129,262 @@ create table if not exists hub_events (
   external_url text,
   image_url text,
   category text,
-  status text default 'published',
-  metadata jsonb default '{}'::jsonb,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  status text DEFAULT 'published',
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_hub_events_campaign ON public.hub_events(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_hub_events_start ON public.hub_events(start_date);
+CREATE INDEX IF NOT EXISTS idx_hub_events_category ON public.hub_events(category);
 
-create index if not exists idx_hub_events_campaign on hub_events(campaign_id);
-create index if not exists idx_hub_events_start on hub_events(start_date);
-create index if not exists idx_hub_events_category on hub_events(category);
-
--- 3. TABLA event_affiliations
-create table if not exists event_affiliations (
-  id uuid primary key default gen_random_uuid(),
-  event_id uuid not null references hub_events(id) on delete cascade,
-  affiliate_partner text not null,
-  referral_url text not null,
-  commission_rate numeric(5,2) default 0.00,
-  clicks_count integer default 0,
-  conversions_count integer default 0,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+-- 9. TABLA event_affiliations
+CREATE TABLE IF NOT EXISTS public.event_affiliations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id uuid NOT NULL REFERENCES public.hub_events(id) ON DELETE CASCADE,
+  affiliate_partner text NOT NULL,
+  referral_url text NOT NULL,
+  commission_rate numeric(5,2) DEFAULT 0.00,
+  clicks_count integer DEFAULT 0,
+  conversions_count integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_event_affiliations_event ON public.event_affiliations(event_id);
 
-create index if not exists idx_event_affiliations_event on event_affiliations(event_id);
-
--- 4. TABLA event_sync_logs
-create table if not exists event_sync_logs (
-  id uuid primary key default gen_random_uuid(),
-  source_id uuid not null references external_event_sources(id) on delete cascade,
-  events_synced integer default 0,
-  status text not null,
+-- 10. TABLA event_sync_logs
+CREATE TABLE IF NOT EXISTS public.event_sync_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_id uuid NOT NULL REFERENCES public.external_event_sources(id) ON DELETE CASCADE,
+  events_synced integer DEFAULT 0,
+  status text NOT NULL,
   error_details text,
-  executed_at timestamptz default now()
+  executed_at timestamptz DEFAULT now()
 );
 
--- 5. RLS Y POLITICAS DE SEGURIDAD
-alter table external_event_sources enable row level security;
-alter table hub_events enable row level security;
-alter table event_affiliations enable row level security;
-alter table event_sync_logs enable row level security;
-
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Eventos publicados son legibles publicamente') then
-    create policy  Eventos publicados son legibles publicamente on hub_events for select using (status = 'published');
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Fuentes de eventos activas son legibles publicamente') then
-    create policy Fuentes de eventos activas son legibles publicamente on external_event_sources for select using (is_active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins tienen control total en Event Hub') then
-    create policy Superadmins tienen control total en Event Hub on hub_events for all to authenticated using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan fuentes y logs') then
-    create policy Superadmins gestionan fuentes y logs on external_event_sources for all to authenticated using (true);
-  end if;
-end ;
--- MIGRACION FASE 4: Gamificacion de Eventos y Misiones
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
-
--- 1. TABLA event_missions
-create table if not exists event_missions (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid references campaigns(id) on delete cascade,
-  event_id uuid references hub_events(id) on delete cascade,
-  entity_id uuid references campaign_entities(id) on delete cascade,
-  title text not null,
+-- 11. TABLA event_missions (Gamificación)
+CREATE TABLE IF NOT EXISTS public.event_missions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  event_id uuid REFERENCES public.hub_events(id) ON DELETE CASCADE,
+  entity_id uuid REFERENCES public.campaign_entities(id) ON DELETE CASCADE,
+  title text NOT NULL,
   description text,
-  mission_type text not null,
-  points_reward integer default 50,
-  validation_method text default 'qr_code',
+  mission_type text NOT NULL,
+  points_reward integer DEFAULT 50,
+  validation_method text DEFAULT 'qr_code',
   validation_payload text,
   latitude double precision,
   longitude double precision,
-  radius_meters integer default 100,
-  is_active boolean default true,
+  radius_meters integer DEFAULT 100,
+  is_active boolean DEFAULT true,
   starts_at timestamptz,
   ends_at timestamptz,
-  metadata jsonb default '{}'::jsonb,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_event_missions_campaign ON public.event_missions(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_event_missions_event ON public.event_missions(event_id);
 
-create index if not exists idx_event_missions_campaign on event_missions(campaign_id);
-create index if not exists idx_event_missions_event on event_missions(event_id);
-
--- 2. TABLA user_mission_progress
-create table if not exists user_mission_progress (
-  id uuid primary key default gen_random_uuid(),
-  mission_id uuid not null references event_missions(id) on delete cascade,
-  user_identifier text not null,
-  status text default 'in_progress',
-  points_awarded integer default 0,
+-- 12. TABLA user_mission_progress
+CREATE TABLE IF NOT EXISTS public.user_mission_progress (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  mission_id uuid NOT NULL REFERENCES public.event_missions(id) ON DELETE CASCADE,
+  user_identifier text NOT NULL,
+  status text DEFAULT 'in_progress',
+  points_awarded integer DEFAULT 0,
   completed_at timestamptz,
   claimed_at timestamptz,
-  metadata jsonb default '{}'::jsonb,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique (mission_id, user_identifier)
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE (mission_id, user_identifier)
 );
+CREATE INDEX IF NOT EXISTS idx_user_mission_progress_user ON public.user_mission_progress(user_identifier);
+CREATE INDEX IF NOT EXISTS idx_user_mission_progress_mission ON public.user_mission_progress(mission_id);
 
-create index if not exists idx_user_mission_progress_user on user_mission_progress(user_identifier);
-create index if not exists idx_user_mission_progress_mission on user_mission_progress(mission_id);
-
--- 3. TABLA mission_checkins
-create table if not exists mission_checkins (
-  id uuid primary key default gen_random_uuid(),
-  mission_id uuid not null references event_missions(id) on delete cascade,
-  user_identifier text not null,
-  verification_method text not null,
+-- 13. TABLA mission_checkins
+CREATE TABLE IF NOT EXISTS public.mission_checkins (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  mission_id uuid NOT NULL REFERENCES public.event_missions(id) ON DELETE CASCADE,
+  user_identifier text NOT NULL,
+  verification_method text NOT NULL,
   submitted_payload text,
   latitude double precision,
   longitude double precision,
-  verified boolean default true,
-  created_at timestamptz default now()
+  verified boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_mission_checkins_user ON public.mission_checkins(user_identifier);
 
-create index if not exists idx_mission_checkins_user on mission_checkins(user_identifier);
-
--- 4. RLS Y POLITICAS DE SEGURIDAD
-alter table event_missions enable row level security;
-alter table user_mission_progress enable row level security;
-alter table mission_checkins enable row level security;
-
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Misiones activas son legibles publicamente') then
-    create policy  Misiones activas son legibles publicamente on event_missions for select using (is_active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Usuarios leen su propio progreso') then
-    create policy Usuarios leen su propio progreso on user_mission_progress for select using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Usuarios registran su progreso') then
-    create policy Usuarios registran su progreso on user_mission_progress for insert with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Usuarios registran checkins') then
-    create policy Usuarios registran checkins on mission_checkins for insert with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan misiones') then
-    create policy Superadmins gestionan misiones on event_missions for all to authenticated using (true);
-  end if;
-end ;
--- MIGRACION FASE 5: Modulos de Rutas, Patrimonio y Puntos de Interes
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
-
--- 1. TABLA tourist_routes
-create table if not exists tourist_routes (
-  id uuid primary key default gen_random_uuid(),
-  campaign_id uuid references campaigns(id) on delete cascade,
-  title text not null,
-  slug text unique not null,
+-- 14. TABLA tourist_routes (Rutas Turísticas y Patrimoniales)
+CREATE TABLE IF NOT EXISTS public.tourist_routes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  slug text UNIQUE NOT NULL,
   description text,
-  route_type text not null,
-  difficulty text default 'facil',
+  route_type text NOT NULL,
+  difficulty text DEFAULT 'facil',
   estimated_duration_minutes integer,
   distance_km numeric(6,2),
   banner_url text,
   geojson_track jsonb,
-  is_active boolean default true,
-  metadata jsonb default '{}'::jsonb,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  is_active boolean DEFAULT true,
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_tourist_routes_campaign ON public.tourist_routes(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_tourist_routes_type ON public.tourist_routes(route_type);
 
-create index if not exists idx_tourist_routes_campaign on tourist_routes(campaign_id);
-create index if not exists idx_tourist_routes_type on tourist_routes(route_type);
-
--- 2. TABLA route_stops
-create table if not exists route_stops (
-  id uuid primary key default gen_random_uuid(),
-  route_id uuid not null references tourist_routes(id) on delete cascade,
-  entity_id uuid references campaign_entities(id) on delete set null,
-  stop_order integer not null,
-  title text not null,
+-- 15. TABLA route_stops
+CREATE TABLE IF NOT EXISTS public.route_stops (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  route_id uuid NOT NULL REFERENCES public.tourist_routes(id) ON DELETE CASCADE,
+  entity_id uuid REFERENCES public.campaign_entities(id) ON DELETE SET NULL,
+  stop_order integer NOT NULL,
+  title text NOT NULL,
   description text,
   image_url text,
   audio_guide_url text,
-  latitude double precision not null,
-  longitude double precision not null,
-  estimated_stay_minutes integer default 15,
-  metadata jsonb default '{}'::jsonb,
-  created_at timestamptz default now(),
-  unique (route_id, stop_order)
+  latitude double precision NOT NULL,
+  longitude double precision NOT NULL,
+  estimated_stay_minutes integer DEFAULT 15,
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE (route_id, stop_order)
 );
+CREATE INDEX IF NOT EXISTS idx_route_stops_route ON public.route_stops(route_id);
 
-create index if not exists idx_route_stops_route on route_stops(route_id);
-
--- 3. TABLA user_route_completions
-create table if not exists user_route_completions (
-  id uuid primary key default gen_random_uuid(),
-  route_id uuid not null references tourist_routes(id) on delete cascade,
-  user_identifier text not null,
-  stops_completed integer default 0,
-  total_stops integer not null,
-  completed boolean default false,
+-- 16. TABLA user_route_completions
+CREATE TABLE IF NOT EXISTS public.user_route_completions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  route_id uuid NOT NULL REFERENCES public.tourist_routes(id) ON DELETE CASCADE,
+  user_identifier text NOT NULL,
+  stops_completed integer DEFAULT 0,
+  total_stops integer NOT NULL,
+  completed boolean DEFAULT false,
   completed_at timestamptz,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique (route_id, user_identifier)
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE (route_id, user_identifier)
 );
+CREATE INDEX IF NOT EXISTS idx_user_route_completions_user ON public.user_route_completions(user_identifier);
 
-create index if not exists idx_user_route_completions_user on user_route_completions(user_identifier);
-
--- 4. RLS Y POLITICAS DE SEGURIDAD
-alter table tourist_routes enable row level security;
-alter table route_stops enable row level security;
-alter table user_route_completions enable row level security;
-
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Rutas activas son legibles publicamente') then
-    create policy  Rutas activas son legibles publicamente on tourist_routes for select using (is_active = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Paradas de ruta son legibles publicamente') then
-    create policy Paradas de ruta son legibles publicamente on route_stops for select using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Usuarios leen sus progresos de ruta') then
-    create policy Usuarios leen sus progresos de ruta on user_route_completions for select using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Usuarios gestionan sus progresos de ruta') then
-    create policy Usuarios gestionan sus progresos de ruta on user_route_completions for all using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan rutas y paradas') then
-    create policy Superadmins gestionan rutas y paradas on tourist_routes for all to authenticated using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan paradas') then
-    create policy Superadmins gestionan paradas on route_stops for all to authenticated using (true);
-  end if;
-end ;
--- MIGRACION FASE 6: Marketplace de Plantillas Instalables
--- Compatible 100% con produccion (Zero-Downtime, no destructiva)
-
--- 1. TABLA marketplace_packages
-create table if not exists marketplace_packages (
-  id uuid primary key default gen_random_uuid(),
-  template_id uuid not null references templates(id) on delete cascade,
-  package_code text unique not null,
-  title text not null,
+-- 17. TABLA marketplace_packages
+CREATE TABLE IF NOT EXISTS public.marketplace_packages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  template_id uuid NOT NULL REFERENCES public.templates(id) ON DELETE CASCADE,
+  package_code text UNIQUE NOT NULL,
+  title text NOT NULL,
   summary text,
   detailed_description text,
-  author_name text default 'LokiTrono Core',
-  version text default '1.0.0',
+  author_name text DEFAULT 'LokiTrono Core',
+  version text DEFAULT '1.0.0',
   icon_url text,
-  preview_images jsonb default '[]'::jsonb,
-  tags jsonb default '[]'::jsonb,
-  default_theme jsonb default '{}'::jsonb,
-  default_settings jsonb default '{}'::jsonb,
-  sample_entities jsonb default '[]'::jsonb,
-  sample_missions jsonb default '[]'::jsonb,
-  is_official boolean default true,
-  is_published boolean default true,
-  installs_count integer default 0,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  preview_images jsonb DEFAULT '[]'::jsonb,
+  tags jsonb DEFAULT '[]'::jsonb,
+  default_theme jsonb DEFAULT '{}'::jsonb,
+  default_settings jsonb DEFAULT '{}'::jsonb,
+  sample_entities jsonb DEFAULT '[]'::jsonb,
+  sample_missions jsonb DEFAULT '[]'::jsonb,
+  is_official boolean DEFAULT true,
+  is_published boolean DEFAULT true,
+  installs_count integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_marketplace_packages_template ON public.marketplace_packages(template_id);
+CREATE INDEX IF NOT EXISTS idx_marketplace_packages_code ON public.marketplace_packages(package_code);
 
-create index if not exists idx_marketplace_packages_template on marketplace_packages(template_id);
-create index if not exists idx_marketplace_packages_code on marketplace_packages(package_code);
-
--- 2. TABLA campaign_installations
-create table if not exists campaign_installations (
-  id uuid primary key default gen_random_uuid(),
-  package_id uuid not null references marketplace_packages(id) on delete cascade,
-  campaign_id uuid not null references campaigns(id) on delete cascade,
-  installed_by text not null,
-  installed_version text not null,
-  configuration_snapshot jsonb default '{}'::jsonb,
-  installed_at timestamptz default now()
+-- 18. TABLA campaign_installations
+CREATE TABLE IF NOT EXISTS public.campaign_installations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  package_id uuid NOT NULL REFERENCES public.marketplace_packages(id) ON DELETE CASCADE,
+  campaign_id uuid NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
+  installed_by text NOT NULL,
+  installed_version text NOT NULL,
+  configuration_snapshot jsonb DEFAULT '{}'::jsonb,
+  installed_at timestamptz DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_campaign_installations_campaign ON public.campaign_installations(campaign_id);
 
-create index if not exists idx_campaign_installations_campaign on campaign_installations(campaign_id);
+-- 19. SEMILLAS DE DATOS BASE
+INSERT INTO public.templates (code, name, category, description)
+VALUES
+  ('BARRIOS', 'LokiTrono Barrios', 'competition', 'Competicion de barrios y gamificacion'),
+  ('TURISMO', 'Portal Turismo y Rutas', 'tourism', 'Guia de patrimonio y rutas locales'),
+  ('ESCAPARATES', 'Concurso de Escaparates', 'competition', 'Votacion popular de comercios'),
+  ('EVENT_HUB', 'Portal de Eventos', 'events', 'Agregador de agenda cultural')
+ON CONFLICT (code) DO NOTHING;
 
--- 3. SEMILLAS DE PAQUETES INICIALES
-insert into marketplace_packages (
-  template_id, package_code, title, summary, author_name, tags, default_theme, default_settings
-)
-select 
-  id,
-  'PACK_RUTA_GASTRONOMICA',
-  'Ruta Gastronomica y Concurso de Tapas',
-  'Plantilla completa para rutas de hosteleria con votos populares, mapas de locales y misiones de degustacion.',
-  'LokiTrono Platform',
-  '[ gastronomia, hosteleria, comercio, turismo]'::jsonb,
-  '{primary_color: #d97706, secondary_color: #78350f}'::jsonb,
-  '{max_votes: 3, public_results: true, show_ranking: true}'::jsonb
-from templates where code = 'TURISMO' limit 1
-on conflict (package_code) do nothing;
+-- 20. HABILITAR ROW LEVEL SECURITY (RLS)
+ALTER TABLE public.templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaign_theme ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaign_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaign_entities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaign_rewards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.external_event_sources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.hub_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.event_affiliations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.event_sync_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.event_missions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_mission_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.mission_checkins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tourist_routes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.route_stops ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_route_completions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.marketplace_packages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.campaign_installations ENABLE ROW LEVEL SECURITY;
 
-insert into marketplace_packages (
-  template_id, package_code, title, summary, author_name, tags, default_theme, default_settings
-)
-select 
-  id,
-  'PACK_PATRIMONIO_CULTURAL',
-  'Gymkana de Patrimonio y Monumentos',
-  'Ruta interactiva por el casco historico con audioguias, preguntas gamificadas y sellos virtuales.',
-  'LokiTrono Platform',
-  '[cultura, patrimonio, monumentos, educacion]'::jsonb,
-  '{primary_color: #0284c7, secondary_color: #0f172a}'::jsonb,
-  '{max_votes: 1, show_rewards: true, show_ranking: true}'::jsonb
-from templates where code = 'TURISMO' limit 1
-on conflict (package_code) do nothing;
+-- 21. POLÍTICAS DE LECTURA PÚBLICA (IDEMPOTENTES)
+DROP POLICY IF EXISTS "p_templates_read" ON public.templates;
+CREATE POLICY "p_templates_read" ON public.templates FOR SELECT USING (is_active = true);
 
--- 4. RLS Y POLITICAS DE SEGURIDAD
-alter table marketplace_packages enable row level security;
-alter table campaign_installations enable row level security;
+DROP POLICY IF EXISTS "p_campaigns_read" ON public.campaigns;
+CREATE POLICY "p_campaigns_read" ON public.campaigns FOR SELECT USING (status in ('active', 'completed', 'draft'));
 
-do 
-begin
-  if not exists (select 1 from pg_policies where policyname = 'Paquetes publicados son legibles publicamente') then
-    create policy Paquetes publicados son legibles publicamente on marketplace_packages for select using (is_published = true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan catalogo del marketplace') then
-    create policy Superadmins gestionan catalogo del marketplace on marketplace_packages for all to authenticated using (true);
-  end if;
-  if not exists (select 1 from pg_policies where policyname = 'Superadmins gestionan instalaciones de campana') then
-    create policy Superadmins gestionan instalaciones de campana on campaign_installations for all to authenticated using (true);
-  end if;
-end ;
+DROP POLICY IF EXISTS "p_campaign_theme_read" ON public.campaign_theme;
+CREATE POLICY "p_campaign_theme_read" ON public.campaign_theme FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "p_campaign_settings_read" ON public.campaign_settings;
+CREATE POLICY "p_campaign_settings_read" ON public.campaign_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "p_campaign_entities_read" ON public.campaign_entities;
+CREATE POLICY "p_campaign_entities_read" ON public.campaign_entities FOR SELECT USING (active = true);
+
+DROP POLICY IF EXISTS "p_campaign_rewards_read" ON public.campaign_rewards;
+CREATE POLICY "p_campaign_rewards_read" ON public.campaign_rewards FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "p_external_sources_read" ON public.external_event_sources;
+CREATE POLICY "p_external_sources_read" ON public.external_event_sources FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "p_hub_events_read" ON public.hub_events;
+CREATE POLICY "p_hub_events_read" ON public.hub_events FOR SELECT USING (status = 'published');
+
+DROP POLICY IF EXISTS "p_event_missions_read" ON public.event_missions;
+CREATE POLICY "p_event_missions_read" ON public.event_missions FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "p_user_progress_read" ON public.user_mission_progress;
+CREATE POLICY "p_user_progress_read" ON public.user_mission_progress FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "p_user_progress_insert" ON public.user_mission_progress;
+CREATE POLICY "p_user_progress_insert" ON public.user_mission_progress FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "p_mission_checkins_insert" ON public.mission_checkins;
+CREATE POLICY "p_mission_checkins_insert" ON public.mission_checkins FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "p_tourist_routes_read" ON public.tourist_routes;
+CREATE POLICY "p_tourist_routes_read" ON public.tourist_routes FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "p_route_stops_read" ON public.route_stops;
+CREATE POLICY "p_route_stops_read" ON public.route_stops FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "p_user_routes_read" ON public.user_route_completions;
+CREATE POLICY "p_user_routes_read" ON public.user_route_completions FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "p_marketplace_read" ON public.marketplace_packages;
+CREATE POLICY "p_marketplace_read" ON public.marketplace_packages FOR SELECT USING (is_published = true);
