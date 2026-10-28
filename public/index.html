@@ -28,162 +28,190 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
 
-  <!-- BARRA DE NAVEGACIÓN -->
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
   <nav class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
+      
+      <!-- LOGO -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('publica')">
         <span class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-amber-400">
           <i class="fa-solid fa-crown mr-2 text-amber-400"></i>LokiTrono
         </span>
         <span class="text-xs bg-sky-950 text-sky-300 px-2 py-0.5 rounded-full border border-sky-800 font-medium">Platform 2.0</span>
       </div>
-      <div class="hidden md:flex space-x-6 text-sm font-medium">
-        <button onclick="switchTab('turismo')" id="tab-turismo" class="nav-btn text-sky-400 border-b-2 border-sky-400 pb-1">
-          <i class="fa-solid fa-map-location-dot mr-1"></i> Rutas y POIs
+
+      <!-- MENÚ PRINCIPAL DESKTOP (VISTAS PRINCIPALES) -->
+      <div class="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium">
+        <button onclick="switchView('publica')" id="btn-view-publica" class="view-btn px-3 py-1.5 rounded-lg text-sky-400 bg-slate-800 font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-compass"></i> <span>Explorar</span>
         </button>
-        <button onclick="switchTab('eventos')" id="tab-eventos" class="nav-btn text-slate-300 hover:text-white pb-1">
-          <i class="fa-solid fa-calendar-days mr-1"></i> Event Hub
+        <button onclick="switchView('usuario')" id="btn-view-usuario" class="view-btn px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-id-badge"></i> <span>Mi Perfil</span>
         </button>
-        <button onclick="switchTab('misiones')" id="tab-misiones" class="nav-btn text-slate-300 hover:text-white pb-1">
-          <i class="fa-solid fa-trophy mr-1"></i> Gamificación & Misiones
-        </button>
-        <button onclick="switchTab('marketplace')" id="tab-marketplace" class="nav-btn text-slate-300 hover:text-white pb-1">
-          <i class="fa-solid fa-store mr-1"></i> Marketplace
+        <button onclick="switchView('configuracion')" id="btn-view-configuracion" class="view-btn px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders"></i> <span>Configuración</span>
         </button>
       </div>
+
+      <!-- BOTONES DE ACCIÓN DERECHA -->
       <div class="flex items-center space-x-3">
         <!-- Puntos -->
         <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
           <i class="fa-solid fa-coins text-amber-400"></i> <span id="userPoints">250</span> pts
         </span>
-        
-        <!-- ESTADO DE SESIÓN / BOTÓN DE LOGIN -->
+
+        <!-- Botón Iniciar Sesión / Perfil -->
         <div id="authContainer">
           <button onclick="openLoginModal()" id="btnLogin" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-full transition flex items-center gap-1.5 shadow">
             <i class="fa-solid fa-user"></i> <span>Iniciar Sesión</span>
           </button>
           <div id="userProfile" class="hidden flex items-center gap-2">
-            <span id="userName" class="text-xs font-semibold text-slate-200"></span>
-            <button onclick="logout()" title="Cerrar Sesión" class="text-slate-400 hover:text-red-400 text-xs transition">
+            <button onclick="switchView('usuario')" class="text-xs font-bold text-sky-300 hover:text-white bg-slate-800 px-3 py-1 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-circle-user text-sky-400"></i> <span id="userName">Usuario</span>
+            </button>
+            <button onclick="logout()" title="Cerrar Sesión" class="text-slate-400 hover:text-red-400 text-xs p-1 transition">
               <i class="fa-solid fa-right-from-bracket"></i>
             </button>
           </div>
         </div>
-      </div>
-    </div>
-  </nav>
 
-  <!-- HERO SECTION -->
-  <header class="bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white py-12 px-4 shadow-inner">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
-        Descubre, Participa y Conecta
-      </h1>
-      <p class="text-slate-300 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
-        Plataforma configurable de rutas turísticas, agenda cultural de eventos y misiones gamificadas para el comercio y patrimonio local.
-      </p>
-      <!-- BUSCADOR INTERACTIVO -->
-      <div class="bg-white rounded-full p-2 flex items-center max-w-xl mx-auto shadow-2xl">
-        <i class="fa-solid fa-magnifying-glass text-slate-400 ml-4 mr-2"></i>
-        <input type="text" id="mainSearch" oninput="filterContent()" placeholder="Buscar rutas, monumentos, eventos o comercios..." class="w-full text-slate-800 outline-none text-sm px-2">
-        <button onclick="filterContent()" class="bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition shadow">
-          Explorar
+        <!-- Botón Menú Móvil -->
+        <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2">
+          <i class="fa-solid fa-bars text-lg"></i>
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- CONTENIDO PRINCIPAL DINÁMICO -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+    <!-- MENÚ MÓVIL DESPLEGABLE -->
+    <div id="mobileMenu" class="md:hidden hidden bg-slate-950 border-t border-slate-800 px-4 py-3 space-y-2">
+      <button onclick="switchView('publica'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-sm text-sky-400 font-bold flex items-center gap-2">
+        <i class="fa-solid fa-compass w-5"></i> Explorar Plataforma
+      </button>
+      <button onclick="switchView('usuario'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-sm text-slate-300 hover:text-white flex items-center gap-2">
+        <i class="fa-solid fa-id-badge w-5"></i> Vista de Usuario (Mi Perfil)
+      </button>
+      <button onclick="switchView('configuracion'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-sm text-slate-300 hover:text-white flex items-center gap-2">
+        <i class="fa-solid fa-sliders w-5"></i> Menú de Configuración
+      </button>
+    </div>
+  </nav>
 
-    <!-- SECCIÓN 1: RUTAS Y POIS (Fase 5) -->
-    <section id="section-turismo">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900">Rutas Turísticas y Patrimoniales</h2>
-          <p class="text-sm text-slate-500">Recorridos guiados interactivos con audioguías y paradas geolocalizadas</p>
-        </div>
-        <span class="text-xs bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-medium">Fase 5 Active</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="routesGrid">
-        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="costa acantilados naturaleza senderismo">
-          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80')">
-            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Naturaleza</span>
-          </div>
-          <div class="p-5">
-            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
-              <span><i class="fa-solid fa-person-walking mr-1 text-sky-500"></i> 4.5 km</span>
-              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 90 min</span>
-              <span class="text-emerald-600 font-semibold">Fácil</span>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Ruta de los Acantilados y Miradores</h3>
-            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Recorrido por la costa escarpada con vistas a calas protegidas y flora autóctona.</p>
-            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.9 (142)</span>
-              <button onclick="openModal('Ruta de los Acantilados', '4 paradas con audioguía disponible. 50 puntos al completarla.')" class="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold px-3 py-1.5 rounded-lg transition">
-                Ver Paradas
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="gastronomia tapas vino comercio hosteleria">
-          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80')">
-            <span class="absolute top-3 right-3 bg-amber-600/90 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Gastronomía</span>
-          </div>
-          <div class="p-5">
-            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
-              <span><i class="fa-solid fa-utensils mr-1 text-amber-500"></i> 6 Locales</span>
-              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 120 min</span>
-              <span class="text-emerald-600 font-semibold">Fácil</span>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Concurso y Ruta de Tapas Locales</h3>
-            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Degustación de productos de lonja y maridaje con votos en tiempo real de tapas participantes.</p>
-            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.8 (89)</span>
-              <button onclick="openModal('Ruta de Tapas', '6 establecimientos adheridos. Degusta y vota tu favorito.')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-lg transition">
-                Ver Locales
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="patrimonio historia monumentos cultura museo">
-          <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80')">
-            <span class="absolute top-3 right-3 bg-indigo-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Patrimonio</span>
-          </div>
-          <div class="p-5">
-            <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
-              <span><i class="fa-solid fa-landmark mr-1 text-indigo-500"></i> 8 Monumentos</span>
-              <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 105 min</span>
-              <span class="text-emerald-600 font-semibold">Fácil</span>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Circuito del Casco Histórico</h3>
-            <p class="text-sm text-slate-600 mb-4 line-clamp-2">Explora palacios, torres defensivas y plazas medievales con cuestionarios interactivos.</p>
-            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-              <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.7 (230)</span>
-              <button onclick="openModal('Circuito Histórico', 'Incluye mapa descargable y audioguías en español e inglés.')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold px-3 py-1.5 rounded-lg transition">
-                Ver Circuito
-              </button>
-            </div>
-          </div>
+  <!-- ========================================== -->
+  <!-- VISTA 1: EXPLORACIÓN PÚBLICA (TURISMO / EVENTOS / MISIONES) -->
+  <!-- ========================================== -->
+  <div id="view-publica">
+    <!-- HERO SECTION -->
+    <header class="bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white py-12 px-4 shadow-inner">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+          Descubre, Participa y Conecta
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
+          Plataforma configurable de rutas turísticas, agenda cultural de eventos y misiones gamificadas para el comercio y patrimonio local.
+        </p>
+        <!-- BUSCADOR -->
+        <div class="bg-white rounded-full p-2 flex items-center max-w-xl mx-auto shadow-2xl">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 ml-4 mr-2"></i>
+          <input type="text" id="mainSearch" oninput="filterContent()" placeholder="Buscar rutas, monumentos, eventos o comercios..." class="w-full text-slate-800 outline-none text-sm px-2">
+          <button onclick="filterContent()" class="bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition shadow">
+            Explorar
+          </button>
         </div>
       </div>
-    </section>
+    </header>
 
-    <!-- SECCIÓN 2: EVENT HUB (Fase 3) -->
-    <section id="section-eventos" class="hidden">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900">Agenda Cultural y Event Hub</h2>
-          <p class="text-sm text-slate-500">Eventos agregados de fuentes municipales, asociaciones y agendas externas</p>
-        </div>
-        <span class="text-xs bg-sky-100 text-sky-800 px-3 py-1 rounded-full font-medium">Fase 3 Active</span>
+    <!-- SUB-PESTAÑAS DE CONTENIDO -->
+    <div class="bg-white border-b border-slate-200 sticky top-16 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto text-sm font-semibold py-3">
+        <button onclick="switchSubTab('turismo')" id="subtab-turismo" class="subtab-btn text-brand-600 border-b-2 border-brand-600 pb-1 whitespace-nowrap">
+          <i class="fa-solid fa-map-location-dot mr-1"></i> Rutas y POIs
+        </button>
+        <button onclick="switchSubTab('eventos')" id="subtab-eventos" class="subtab-btn text-slate-500 hover:text-slate-800 pb-1 whitespace-nowrap">
+          <i class="fa-solid fa-calendar-days mr-1"></i> Event Hub
+        </button>
+        <button onclick="switchSubTab('misiones')" id="subtab-misiones" class="subtab-btn text-slate-500 hover:text-slate-800 pb-1 whitespace-nowrap">
+          <i class="fa-solid fa-trophy mr-1"></i> Gamificación & Misiones
+        </button>
+        <button onclick="switchSubTab('marketplace')" id="subtab-marketplace" class="subtab-btn text-slate-500 hover:text-slate-800 pb-1 whitespace-nowrap">
+          <i class="fa-solid fa-store mr-1"></i> Marketplace
+        </button>
       </div>
+    </div>
 
-      <div class="space-y-4" id="eventsList">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-slate-300 transition">
+    <!-- CONTENIDO DE LAS SUB-PESTAÑAS -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+      
+      <!-- SUB-SECCIÓN RUTAS -->
+      <section id="subcontent-turismo">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="routesGrid">
+          <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="costa acantilados naturaleza senderismo">
+            <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80')">
+              <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Naturaleza</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+                <span><i class="fa-solid fa-person-walking mr-1 text-sky-500"></i> 4.5 km</span>
+                <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 90 min</span>
+                <span class="text-emerald-600 font-semibold">Fácil</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-1">Ruta de los Acantilados y Miradores</h3>
+              <p class="text-sm text-slate-600 mb-4 line-clamp-2">Recorrido por la costa escarpada con vistas a calas protegidas y flora autóctona.</p>
+              <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.9 (142)</span>
+                <button onclick="openModal('Ruta de los Acantilados', '4 paradas con audioguía disponible. 50 puntos al completarla.')" class="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold px-3 py-1.5 rounded-lg transition">
+                  Ver Paradas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="gastronomia tapas vino comercio hosteleria">
+            <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80')">
+              <span class="absolute top-3 right-3 bg-amber-600/90 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Gastronomía</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+                <span><i class="fa-solid fa-utensils mr-1 text-amber-500"></i> 6 Locales</span>
+                <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 120 min</span>
+                <span class="text-emerald-600 font-semibold">Fácil</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-1">Concurso y Ruta de Tapas Locales</h3>
+              <p class="text-sm text-slate-600 mb-4 line-clamp-2">Degustación de productos de lonja y maridaje con votos en tiempo real de tapas participantes.</p>
+              <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.8 (89)</span>
+                <button onclick="openModal('Ruta de Tapas', '6 establecimientos adheridos. Degusta y vota tu favorito.')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-lg transition">
+                  Ver Locales
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-item bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition" data-keywords="patrimonio historia monumentos cultura museo">
+            <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80')">
+              <span class="absolute top-3 right-3 bg-indigo-900/80 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full font-semibold">Patrimonio</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center text-xs text-slate-400 gap-3 mb-2 font-medium">
+                <span><i class="fa-solid fa-landmark mr-1 text-indigo-500"></i> 8 Monumentos</span>
+                <span><i class="fa-regular fa-clock mr-1 text-amber-500"></i> 105 min</span>
+                <span class="text-emerald-600 font-semibold">Fácil</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-1">Circuito del Casco Histórico</h3>
+              <p class="text-sm text-slate-600 mb-4 line-clamp-2">Explora palacios, torres defensivas y plazas medievales con cuestionarios interactivos.</p>
+              <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                <span class="text-xs font-bold text-amber-500"><i class="fa-solid fa-star"></i> 4.7 (230)</span>
+                <button onclick="openModal('Circuito Histórico', 'Incluye mapa descargable y audioguías en español e inglés.')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold px-3 py-1.5 rounded-lg transition">
+                  Ver Circuito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUB-SECCIÓN EVENTOS -->
+      <section id="subcontent-eventos" class="hidden space-y-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-start gap-4">
             <div class="bg-sky-50 text-sky-600 p-3 rounded-xl text-center min-w-[64px]">
               <span class="block text-xs uppercase font-extrabold tracking-wider">NOV</span>
@@ -199,117 +227,261 @@
             <i class="fa-solid fa-qrcode"></i> Check-in (+40 pts)
           </button>
         </div>
+      </section>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-slate-300 transition">
-          <div class="flex items-start gap-4">
-            <div class="bg-amber-50 text-amber-600 p-3 rounded-xl text-center min-w-[64px]">
-              <span class="block text-xs uppercase font-extrabold tracking-wider">NOV</span>
-              <span class="block text-2xl font-black">12</span>
-            </div>
+      <!-- SUB-SECCIÓN MISIONES -->
+      <section id="subcontent-misiones" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
             <div>
-              <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Feria y Comercio</span>
-              <h3 class="text-lg font-bold text-slate-900 mt-1">Mercado de Artesanos y Productores Km 0</h3>
-              <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i> Paseo Marítimo &bull; 10:00 - 18:00 h</p>
+              <div class="flex justify-between items-center mb-3">
+                <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">Misión de Visita</span>
+                <span class="text-amber-500 font-extrabold text-sm"><i class="fa-solid fa-coins"></i> +50 pts</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-1">Visita el Mirador del Faro</h3>
+              <p class="text-sm text-slate-600 mb-4">Acércate a menos de 50 metros del faro para validar tu posición por GPS.</p>
             </div>
+            <button onclick="simulateCheckin('Mirador del Faro', 50)" class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-location-crosshairs"></i> Validar Posición GPS
+            </button>
           </div>
-          <button onclick="claimMission('Visita Mercado Artesanos', 30)" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-qrcode"></i> Check-in (+30 pts)
-          </button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- SECCIÓN 3: GAMIFICACIÓN Y MISIONES (Fase 4) -->
-    <section id="section-misiones" class="hidden">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900">Misiones Activas y Desafíos</h2>
-          <p class="text-sm text-slate-500">Completa objetivos en la ciudad para ganar puntos y canjear recompensas</p>
-        </div>
-        <span class="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">Fase 4 Active</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">Misión de Visita</span>
-              <span class="text-amber-500 font-extrabold text-sm"><i class="fa-solid fa-coins"></i> +50 pts</span>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Visita el Mirador del Faro</h3>
-            <p class="text-sm text-slate-600 mb-4">Acércate a menos de 50 metros del faro para validar tu posición por GPS o escanear el tótem QR.</p>
-          </div>
-          <button onclick="simulateCheckin('Mirador del Faro', 50)" class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-location-crosshairs"></i> Validar Posición GPS
-          </button>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full font-bold">Comercio Local</span>
-              <span class="text-amber-500 font-extrabold text-sm"><i class="fa-solid fa-coins"></i> +75 pts</span>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Compra en Establecimiento Adherido</h3>
-            <p class="text-sm text-slate-600 mb-4">Solicita tu código PIN al consumir en los comercios de la ruta gastronómica.</p>
-          </div>
-          <button onclick="promptPin()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-key"></i> Canjear Código PIN
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 4: MARKETPLACE DE PLANTILLAS (Fase 6) -->
-    <section id="section-marketplace" class="hidden">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900">Marketplace de Plantillas</h2>
-          <p class="text-sm text-slate-500">Soluciones listas para desplegar en tu municipio, asociación o concurso</p>
-        </div>
-        <span class="text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">Fase 6 Active</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
-              <i class="fa-solid fa-wine-glass"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg text-slate-900">Pack Ruta Gastronómica</h3>
-              <span class="text-xs text-slate-400">Versión 1.0.0 &bull; Oficial</span>
-            </div>
-          </div>
-          <p class="text-sm text-slate-600 mb-4">Votación en tiempo real de tapas y restaurantes, mapa de establecimientos y recompensas por degustación.</p>
-          <div class="flex gap-2">
+      <!-- SUB-SECCIÓN MARKETPLACE -->
+      <section id="subcontent-marketplace" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-lg text-slate-900 mb-1">Pack Ruta Gastronómica</h3>
+            <p class="text-sm text-slate-600 mb-4">Votación en tiempo real de tapas y restaurantes, mapa de locales y recompensas por degustación.</p>
             <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Hostelería</span>
-            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Votos</span>
-            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Comercio</span>
           </div>
         </div>
+      </section>
+    </main>
+  </div>
 
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-12 h-12 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl font-bold">
-              <i class="fa-solid fa-monument"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg text-slate-900">Pack Gymkana Patrimonial</h3>
-              <span class="text-xs text-slate-400">Versión 1.0.0 &bull; Oficial</span>
-            </div>
+  <!-- ========================================== -->
+  <!-- VISTA 2: VISTA DE USUARIO (PERFIL Y MIS DATOS) -->
+  <!-- ========================================== -->
+  <div id="view-usuario" class="hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 mb-8">
+      <div class="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-600 to-amber-400 text-white flex items-center justify-center text-3xl font-black shadow-lg">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="text-center sm:text-left flex-1">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+            <h2 id="profileDisplayName" class="text-2xl font-black text-slate-900">Usuario Invitado</h2>
+            <span class="inline-block bg-sky-100 text-brand-700 text-xs px-2.5 py-0.5 rounded-full font-bold">Participante Activo</span>
           </div>
-          <p class="text-sm text-slate-600 mb-4">Itinerario histórico con audioguías geolocalizadas, preguntas de trivia y sellos virtuales coleccionables.</p>
-          <div class="flex gap-2">
-            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Cultura</span>
-            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Educación</span>
-            <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Turismo</span>
+          <p id="profileIdentifier" class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-mobile-screen mr-1"></i> Sesión local activada</p>
+          <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+            <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">
+              <i class="fa-solid fa-award text-amber-600"></i> Nivel Explorador
+            </span>
+            <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full font-semibold">
+              <i class="fa-solid fa-map-pin text-slate-500 mr-1"></i> Bilbao / Bizkaia
+            </span>
           </div>
+        </div>
+        <div class="text-center bg-slate-50 p-4 rounded-2xl border border-slate-100 min-w-[130px]">
+          <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider">Saldo Puntos</span>
+          <span class="text-3xl font-black text-amber-500" id="profilePoints">250</span>
         </div>
       </div>
-    </section>
 
-  </main>
+      <!-- ESTADÍSTICAS Y ACTIVIDAD -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div class="text-xs text-slate-400 font-bold mb-1"><i class="fa-solid fa-route text-sky-500 mr-1"></i> Rutas Completadas</div>
+          <div class="text-xl font-black text-slate-800">2 de 6</div>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div class="text-xs text-slate-400 font-bold mb-1"><i class="fa-solid fa-check-double text-emerald-500 mr-1"></i> Misiones Realizadas</div>
+          <div class="text-xl font-black text-slate-800">5 Misiones</div>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div class="text-xs text-slate-400 font-bold mb-1"><i class="fa-solid fa-ticket text-purple-500 mr-1"></i> Cupones y Recompensas</div>
+          <div class="text-xl font-black text-slate-800">1 Disponible</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIS RECOMPENSAS Y PARTICIPACIONES -->
+    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+      <i class="fa-solid fa-gift text-amber-500"></i> Mis Recompensas Desbloqueadas
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-900 text-sm">10% Descuento en Comercio Local</h4>
+            <p class="text-xs text-slate-400">Válido en establecimientos de la ruta</p>
+          </div>
+        </div>
+        <button onclick="openModal('Cupón de Descuento', 'Código: LOKI10. Muestra este código en caja para aplicar el 10% de descuento.')" class="bg-slate-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-slate-800 transition">
+          Ver Cupón
+        </button>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-center justify-between opacity-70">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-700 text-sm">Bono Degustación Gastronómica</h4>
+            <p class="text-xs text-slate-400">Desbloquea al alcanzar 350 puntos</p>
+          </div>
+        </div>
+        <span class="text-xs text-slate-400 font-bold">Faltan 100 pts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VISTA 3: MENÚ DE CONFIGURACIÓN (ADMIN / ORGANIZACIÓN) -->
+  <!-- ========================================== -->
+  <div id="view-configuracion" class="hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+    <div class="mb-8">
+      <h2 class="text-2xl font-black text-slate-900">Menú de Configuración</h2>
+      <p class="text-sm text-slate-500">Ajustes generales de plataforma, marca blanca, conexiones de base de datos y campañas</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Navegación lateral de configuración -->
+      <div class="space-y-1">
+        <button onclick="switchConfigSection('general')" id="cfg-btn-general" class="cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-bold text-sm bg-brand-50 text-brand-700 flex items-center gap-2">
+          <i class="fa-solid fa-sliders w-5"></i> Parámetros Generales
+        </button>
+        <button onclick="switchConfigSection('marablanca')" id="cfg-btn-marablanca" class="cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-palette w-5"></i> Marca Blanca y Colores
+        </button>
+        <button onclick="switchConfigSection('campanas')" id="cfg-btn-campanas" class="cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-bullhorn w-5"></i> Campañas Activas
+        </button>
+        <button onclick="switchConfigSection('seguridad')" id="cfg-btn-seguridad" class="cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved w-5"></i> Conexión & Supabase
+        </button>
+      </div>
+
+      <!-- Contenido del panel de configuración -->
+      <div class="md:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        
+        <!-- SECCIÓN CONFIG: GENERAL -->
+        <div id="cfg-section-general">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Configuración de Plataforma</h3>
+          <form onsubmit="saveConfig(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre de la Plataforma / Instancia</label>
+              <input type="text" value="LokiTrono Platform" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Municipio / Entidad Organizadora</label>
+              <input type="text" value="Ayuntamiento / Asociación Local" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500">
+            </div>
+            <div class="flex items-center justify-between py-2 border-y border-slate-100">
+              <div>
+                <span class="block text-sm font-bold text-slate-800">Modo Público sin Registro</span>
+                <span class="block text-xs text-slate-500">Permitir navegar rutas y ver eventos sin iniciar sesión</span>
+              </div>
+              <input type="checkbox" checked class="w-4 h-4 text-brand-600 rounded">
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+              <div>
+                <span class="block text-sm font-bold text-slate-800">Geolocalización GPS</span>
+                <span class="block text-xs text-slate-500">Requerir coordenadas reales para validar misiones turísticas</span>
+              </div>
+              <input type="checkbox" checked class="w-4 h-4 text-brand-600 rounded">
+            </div>
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl transition">
+              Guardar Configuración
+            </button>
+          </form>
+        </div>
+
+        <!-- SECCIÓN CONFIG: MARCA BLANCA -->
+        <div id="cfg-section-marablanca" class="hidden">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Personalización de Marca Blanca</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Color Primario Institucional</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" value="#0284c7" class="w-10 h-10 rounded border border-slate-200 cursor-pointer">
+                <input type="text" value="#0284c7" class="text-sm px-3 py-2 rounded-xl border border-slate-200 w-32 font-mono">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">URL del Logotipo Institucional</label>
+              <input type="text" placeholder="https://ejemplo.com/logo-ayuntamiento.png" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dominio Personalizado</label>
+              <input type="text" value="lokitrono.vercel.app" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200">
+            </div>
+            <button onclick="openModal('Marca Blanca', 'Ajustes visuales guardados correctamente.')" class="bg-slate-900 text-white font-bold text-xs py-2.5 px-5 rounded-xl">
+              Aplicar Estilos
+            </button>
+          </div>
+        </div>
+
+        <!-- SECCIÓN CONFIG: CAMPAÑAS -->
+        <div id="cfg-section-campanas" class="hidden">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Gestor de Campañas Activas</h3>
+          <div class="space-y-3">
+            <div class="p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+              <div>
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">Activa</span>
+                <h4 class="font-bold text-slate-900 text-sm mt-1">LokiTrono Turismo y Rutas 2026</h4>
+                <p class="text-xs text-slate-400">Plantilla: TURISMO &bull; 6 rutas configuradas</p>
+              </div>
+              <button onclick="openModal('Gestor de Campaña', 'Edición de fechas, entidades participantes y parámetros de voto.')" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg">
+                Editar
+              </button>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+              <div>
+                <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Borrador</span>
+                <h4 class="font-bold text-slate-900 text-sm mt-1">Concurso de Escaparates de Navidad</h4>
+                <p class="text-xs text-slate-400">Plantilla: ESCAPARATES &bull; Apertura en Diciembre</p>
+              </div>
+              <button onclick="openModal('Gestor de Campaña', 'Configuración de bases y comercios participantes.')" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg">
+                Editar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN CONFIG: SEGURIDAD -->
+        <div id="cfg-section-seguridad" class="hidden">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Estado de Conexión & Supabase</h3>
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between py-2 border-b border-slate-100">
+              <span class="text-slate-500 font-semibold">Proyecto Supabase</span>
+              <span class="font-mono font-bold text-slate-800">uswikdckptzivsurzrlc</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-slate-100">
+              <span class="text-slate-500 font-semibold">Tablas en Base de Datos</span>
+              <span class="font-bold text-emerald-600">44 tablas activas (OK)</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-slate-100">
+              <span class="text-slate-500 font-semibold">Row Level Security (RLS)</span>
+              <span class="font-bold text-emerald-600">Habilitado e Idempotente</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span class="text-slate-500 font-semibold">Despliegue Hosting</span>
+              <span class="font-bold text-sky-600">Vercel Production</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL DE INICIO DE SESIÓN -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -326,7 +498,7 @@
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono o Identificador</label>
-          <input type="text" id="loginIdentifier" placeholder="Ej: 600123456 o usuario" required class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500 transition">
+          <input type="text" id="loginIdentifier" placeholder="Ej: 600123456 o afjbilbao" required class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-brand-500 transition">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Código PIN / Clave</label>
@@ -337,9 +509,6 @@
           <i class="fa-solid fa-arrow-right"></i>
         </button>
       </form>
-      <p class="text-center text-xs text-slate-400 mt-4">
-        ¿Participante temporal? Puedes navegar sin cuenta como invitado.
-      </p>
     </div>
   </div>
 
@@ -360,39 +529,120 @@
   <!-- FOOTER -->
   <footer class="bg-slate-950 text-slate-400 py-8 px-4 border-t border-slate-900 mt-auto text-center text-xs">
     <p class="mb-2">&copy; 2026 LokiTrono Platform &bull; Conectado a Supabase (Backend) & Vercel (Hosting)</p>
-    <p class="text-slate-500">Módulos activos: Plantillas &bull; Entidades &bull; Event Hub &bull; Gamificación &bull; Rutas y POIs &bull; Marketplace</p>
+    <p class="text-slate-500">Módulos: Exploración &bull; Vista de Usuario &bull; Menú de Configuración &bull; Gamificación</p>
   </footer>
 
-  <!-- LÓGICA DE INTERACTIVIDAD Y AUTENTICACIÓN -->
+  <!-- LÓGICA DE NAVEGACIÓN Y VISTAS -->
   <script>
-    // Comprobar sesión al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       checkStoredSession();
     });
 
+    // CAMBIO DE VISTA PRINCIPAL (Explorar / Usuario / Configuración)
+    function switchView(viewName) {
+      const views = ['publica', 'usuario', 'configuracion'];
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        const btn = document.getElementById('btn-view-' + v);
+        if (v === viewName) {
+          el.classList.remove('hidden');
+          if (btn) {
+            btn.className = 'view-btn px-3 py-1.5 rounded-lg text-sky-400 bg-slate-800 font-bold transition flex items-center gap-1.5';
+          }
+        } else {
+          el.classList.add('hidden');
+          if (btn) {
+            btn.className = 'view-btn px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5 font-medium';
+          }
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // SUB-PESTAÑAS EN LA VISTA PÚBLICA
+    function switchSubTab(tabId) {
+      const subtabs = ['turismo', 'eventos', 'misiones', 'marketplace'];
+      subtabs.forEach(t => {
+        const content = document.getElementById('subcontent-' + t);
+        const btn = document.getElementById('subtab-' + t);
+        if (t === tabId) {
+          content.classList.remove('hidden');
+          btn.className = 'subtab-btn text-brand-600 border-b-2 border-brand-600 pb-1 whitespace-nowrap font-bold';
+        } else {
+          content.classList.add('hidden');
+          btn.className = 'subtab-btn text-slate-500 hover:text-slate-800 pb-1 whitespace-nowrap font-medium';
+        }
+      });
+    }
+
+    // SUB-SECCIONES EN CONFIGURACIÓN
+    function switchConfigSection(secId) {
+      const sections = ['general', 'marablanca', 'campanas', 'seguridad'];
+      sections.forEach(s => {
+        const secEl = document.getElementById('cfg-section-' + s);
+        const btn = document.getElementById('cfg-btn-' + s);
+        if (s === secId) {
+          secEl.classList.remove('hidden');
+          btn.className = 'cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-bold text-sm bg-brand-50 text-brand-700 flex items-center gap-2';
+        } else {
+          secEl.classList.add('hidden');
+          btn.className = 'cfg-nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-2';
+        }
+      });
+    }
+
+    function toggleMobileMenu() {
+      const m = document.getElementById('mobileMenu');
+      m.classList.toggle('hidden');
+    }
+
+    // SESIÓN Y LOGIN
     function checkStoredSession() {
       const user = localStorage.getItem('lokitrono_user');
       if (user) {
         try {
-          const userData = JSON.parse(user);
-          setAuthenticatedState(userData.name || userData.phone || 'Usuario');
+          const u = JSON.parse(user);
+          setAuthenticatedState(u.name || u.phone);
         } catch(e) {}
       }
     }
 
-    function switchTab(tabId) {
-      const sections = ['turismo', 'eventos', 'misiones', 'marketplace'];
-      sections.forEach(s => {
-        const secEl = document.getElementById('section-' + s);
-        const tabEl = document.getElementById('tab-' + s);
-        if (s === tabId) {
-          secEl.classList.remove('hidden');
-          tabEl.className = 'nav-btn text-sky-400 border-b-2 border-sky-400 pb-1 font-semibold';
-        } else {
-          secEl.classList.add('hidden');
-          tabEl.className = 'nav-btn text-slate-300 hover:text-white pb-1 font-medium';
-        }
-      });
+    function handleLogin(event) {
+      event.preventDefault();
+      const identifier = document.getElementById('loginIdentifier').value.trim();
+      const pin = document.getElementById('loginPin').value.trim();
+
+      const userData = { phone: identifier, name: identifier.split('@')[0], loggedAt: new Date().toISOString() };
+      localStorage.setItem('lokitrono_user', JSON.stringify(userData));
+      setAuthenticatedState(userData.name);
+      closeLoginModal();
+      openModal('¡Sesión Iniciada!', `Bienvenido, ${userData.name}. Ahora puedes ver tus progresos en "Mi Perfil".`);
+    }
+
+    function setAuthenticatedState(name) {
+      document.getElementById('btnLogin').classList.add('hidden');
+      document.getElementById('userProfile').classList.remove('hidden');
+      document.getElementById('userName').innerText = name;
+      document.getElementById('profileDisplayName').innerText = name;
+      document.getElementById('profileIdentifier').innerText = 'Sesión iniciada con: ' + name;
+    }
+
+    function logout() {
+      localStorage.removeItem('lokitrono_user');
+      document.getElementById('btnLogin').classList.remove('hidden');
+      document.getElementById('userProfile').classList.add('hidden');
+      document.getElementById('profileDisplayName').innerText = 'Usuario Invitado';
+      document.getElementById('profileIdentifier').innerText = 'Sesión local desactivada';
+      switchView('publica');
+      openModal('Sesión Cerrada', 'Has cerrado tu sesión.');
+    }
+
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.add('hidden');
     }
 
     function openModal(title, desc) {
@@ -405,44 +655,9 @@
       document.getElementById('infoModal').classList.add('hidden');
     }
 
-    function openLoginModal() {
-      document.getElementById('loginModal').classList.remove('hidden');
-    }
-
-    function closeLoginModal() {
-      document.getElementById('loginModal').classList.add('hidden');
-    }
-
-    function handleLogin(event) {
-      event.preventDefault();
-      const identifier = document.getElementById('loginIdentifier').value.trim();
-      const pin = document.getElementById('loginPin').value.trim();
-
-      if (!identifier || !pin) {
-        alert('Por favor introduce tu identificador y PIN');
-        return;
-      }
-
-      // Simular login exitoso y guardar sesión local
-      const userData = { phone: identifier, name: identifier.split('@')[0], loggedAt: new Date().toISOString() };
-      localStorage.setItem('lokitrono_user', JSON.stringify(userData));
-      setAuthenticatedState(userData.name);
-      closeLoginModal();
-      openModal('¡Sesión Iniciada!', `Bienvenido de nuevo, ${userData.name}. Ya tienes acceso completo a tus misiones y votaciones.`);
-    }
-
-    function setAuthenticatedState(userName) {
-      document.getElementById('btnLogin').classList.add('hidden');
-      const profile = document.getElementById('userProfile');
-      profile.classList.remove('hidden');
-      document.getElementById('userName').innerHTML = `<i class="fa-solid fa-circle-user text-sky-400 mr-1"></i> ${userName}`;
-    }
-
-    function logout() {
-      localStorage.removeItem('lokitrono_user');
-      document.getElementById('btnLogin').classList.remove('hidden');
-      document.getElementById('userProfile').classList.add('hidden');
-      openModal('Sesión Cerrada', 'Has cerrado tu sesión correctamente.');
+    function saveConfig(e) {
+      e.preventDefault();
+      openModal('Configuración Guardada', 'Los parámetros de plataforma se han actualizado.');
     }
 
     function filterContent() {
@@ -461,25 +676,22 @@
 
     function simulateCheckin(place, points) {
       const ptsSpan = document.getElementById('userPoints');
+      const profilePts = document.getElementById('profilePoints');
       const current = parseInt(ptsSpan.innerText);
-      ptsSpan.innerText = current + points;
-      openModal('¡Check-in Completado!', `Has validado tu visita a "${place}". Se han sumado +${points} puntos a tu cuenta.`);
+      const updated = current + points;
+      ptsSpan.innerText = updated;
+      profilePts.innerText = updated;
+      openModal('¡Check-in Completado!', `Has validado tu visita a "${place}". Se han sumado +${points} puntos.`);
     }
 
     function claimMission(title, points) {
       const ptsSpan = document.getElementById('userPoints');
+      const profilePts = document.getElementById('profilePoints');
       const current = parseInt(ptsSpan.innerText);
-      ptsSpan.innerText = current + points;
+      const updated = current + points;
+      ptsSpan.innerText = updated;
+      profilePts.innerText = updated;
       openModal('¡Misión Validada!', `Has participado en "${title}". Has recibido +${points} puntos.`);
-    }
-
-    function promptPin() {
-      const pin = prompt('Introduce el código PIN de tu establecimiento:');
-      if (pin && pin.trim().length >= 4) {
-        simulateCheckin('Comercio Local Adherido', 75);
-      } else if (pin) {
-        alert('Código PIN no válido. Debe tener al menos 4 dígitos.');
-      }
     }
   </script>
 </body>
