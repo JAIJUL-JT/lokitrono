@@ -1,0 +1,75 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "events": [
+          {
+            "event": "push"
+          }
+        ],
+        "repository": "{{ $env.GITHUB_REPO }}"
+      },
+      "name": "GitHub Trigger",
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "make publish",
+        "workingDirectory": "{{ $env.WEBAPP_ROOT }}"
+      },
+      "name": "Run Make",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{ $env.GMAIL_USER }}",
+        "toEmail": "{{ $env.NOTIFY_EMAIL }}",
+        "subject": "Despliegue de webapp completado",
+        "text": "El despliegue ha finalizado con éxito. URL de Vercel: {{ $json[\"vercelUrl\"] }}"
+      },
+      "name": "Send Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [
+        750,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "GitHub Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run Make",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Make": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

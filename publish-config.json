@@ -1,0 +1,19 @@
+{
+  "github": {
+    "owner": "usuario",
+    "repo": "lokitrono"
+  },
+  "supabase": {
+    "project": "lokitrono-db"
+  },
+  "vercel": {
+    "project": "lokitrono-frontend"
+  },
+  "notifications": {
+    "email": "usuario@example.com"
+  },
+  "backup": {
+    "service": "drive",
+    "folderId": "1A2B3C4D5E"
+  }
+}

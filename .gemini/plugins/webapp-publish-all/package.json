@@ -1,0 +1,11 @@
+{
+  "name": "webapp-publish-all",
+  "version": "1.0.0",
+  "description": "Skill para orquestar la publicacion de una webapp usando Supabase, GitHub, Vercel, Gmail y Backup gratuito.",
+  "main": "publish-webapp.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
