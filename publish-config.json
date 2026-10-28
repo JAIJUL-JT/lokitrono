@@ -4,10 +4,10 @@
     "repo": "lokitrono"
   },
   "supabase": {
-    "project": "lokitrono-db"
+    "project": "uswikdckptzivsurzrlc"
   },
   "vercel": {
-    "project": "lokitrono-frontend"
+    "project": "lokitrono"
   },
   "notifications": {
     "email": "afjbilbao@gmail.com"
