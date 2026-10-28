@@ -1,9 +1,3 @@
--- ==============================================================================
--- LOKITRONO PLATFORM - MIGRACION COMPLETA ADITIVA (FASES 1 A 6)
--- Compatible 100% con PostgreSQL / Supabase
--- ==============================================================================
-
--- 1. TABLA templates
 CREATE TABLE IF NOT EXISTS public.templates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   code text UNIQUE NOT NULL,
@@ -17,7 +11,6 @@ CREATE TABLE IF NOT EXISTS public.templates (
 );
 CREATE INDEX IF NOT EXISTS idx_templates_code ON public.templates(code);
 
--- 2. TABLA campaigns
 CREATE TABLE IF NOT EXISTS public.campaigns (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   template_id uuid NOT NULL REFERENCES public.templates(id),
@@ -34,7 +27,6 @@ CREATE TABLE IF NOT EXISTS public.campaigns (
 CREATE INDEX IF NOT EXISTS idx_campaigns_template ON public.campaigns(template_id);
 CREATE INDEX IF NOT EXISTS idx_campaigns_code ON public.campaigns(code);
 
--- 3. TABLA campaign_theme (Marca Blanca)
 CREATE TABLE IF NOT EXISTS public.campaign_theme (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid UNIQUE NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -47,7 +39,6 @@ CREATE TABLE IF NOT EXISTS public.campaign_theme (
   updated_at timestamptz DEFAULT now()
 );
 
--- 4. TABLA campaign_settings
 CREATE TABLE IF NOT EXISTS public.campaign_settings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid UNIQUE NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -61,7 +52,6 @@ CREATE TABLE IF NOT EXISTS public.campaign_settings (
   updated_at timestamptz DEFAULT now()
 );
 
--- 5. TABLA campaign_entities (Entidades, Comercios, Monumentos)
 CREATE TABLE IF NOT EXISTS public.campaign_entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -82,7 +72,6 @@ CREATE TABLE IF NOT EXISTS public.campaign_entities (
 CREATE INDEX IF NOT EXISTS idx_campaign_entities_campaign ON public.campaign_entities(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_campaign_entities_type ON public.campaign_entities(entity_type);
 
--- 6. TABLA campaign_rewards
 CREATE TABLE IF NOT EXISTS public.campaign_rewards (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid NOT NULL REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -99,7 +88,6 @@ CREATE TABLE IF NOT EXISTS public.campaign_rewards (
 );
 CREATE INDEX IF NOT EXISTS idx_campaign_rewards_campaign ON public.campaign_rewards(campaign_id);
 
--- 7. TABLA external_event_sources
 CREATE TABLE IF NOT EXISTS public.external_event_sources (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
@@ -113,7 +101,6 @@ CREATE TABLE IF NOT EXISTS public.external_event_sources (
   updated_at timestamptz DEFAULT now()
 );
 
--- 8. TABLA hub_events (Event Hub independiente)
 CREATE TABLE IF NOT EXISTS public.hub_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid REFERENCES public.campaigns(id) ON DELETE SET NULL,
@@ -138,7 +125,6 @@ CREATE INDEX IF NOT EXISTS idx_hub_events_campaign ON public.hub_events(campaign
 CREATE INDEX IF NOT EXISTS idx_hub_events_start ON public.hub_events(start_date);
 CREATE INDEX IF NOT EXISTS idx_hub_events_category ON public.hub_events(category);
 
--- 9. TABLA event_affiliations
 CREATE TABLE IF NOT EXISTS public.event_affiliations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id uuid NOT NULL REFERENCES public.hub_events(id) ON DELETE CASCADE,
@@ -152,7 +138,6 @@ CREATE TABLE IF NOT EXISTS public.event_affiliations (
 );
 CREATE INDEX IF NOT EXISTS idx_event_affiliations_event ON public.event_affiliations(event_id);
 
--- 10. TABLA event_sync_logs
 CREATE TABLE IF NOT EXISTS public.event_sync_logs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   source_id uuid NOT NULL REFERENCES public.external_event_sources(id) ON DELETE CASCADE,
@@ -162,7 +147,6 @@ CREATE TABLE IF NOT EXISTS public.event_sync_logs (
   executed_at timestamptz DEFAULT now()
 );
 
--- 11. TABLA event_missions (Gamificación)
 CREATE TABLE IF NOT EXISTS public.event_missions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -187,7 +171,6 @@ CREATE TABLE IF NOT EXISTS public.event_missions (
 CREATE INDEX IF NOT EXISTS idx_event_missions_campaign ON public.event_missions(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_event_missions_event ON public.event_missions(event_id);
 
--- 12. TABLA user_mission_progress
 CREATE TABLE IF NOT EXISTS public.user_mission_progress (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   mission_id uuid NOT NULL REFERENCES public.event_missions(id) ON DELETE CASCADE,
@@ -204,7 +187,6 @@ CREATE TABLE IF NOT EXISTS public.user_mission_progress (
 CREATE INDEX IF NOT EXISTS idx_user_mission_progress_user ON public.user_mission_progress(user_identifier);
 CREATE INDEX IF NOT EXISTS idx_user_mission_progress_mission ON public.user_mission_progress(mission_id);
 
--- 13. TABLA mission_checkins
 CREATE TABLE IF NOT EXISTS public.mission_checkins (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   mission_id uuid NOT NULL REFERENCES public.event_missions(id) ON DELETE CASCADE,
@@ -218,7 +200,6 @@ CREATE TABLE IF NOT EXISTS public.mission_checkins (
 );
 CREATE INDEX IF NOT EXISTS idx_mission_checkins_user ON public.mission_checkins(user_identifier);
 
--- 14. TABLA tourist_routes (Rutas Turísticas y Patrimoniales)
 CREATE TABLE IF NOT EXISTS public.tourist_routes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id uuid REFERENCES public.campaigns(id) ON DELETE CASCADE,
@@ -239,7 +220,6 @@ CREATE TABLE IF NOT EXISTS public.tourist_routes (
 CREATE INDEX IF NOT EXISTS idx_tourist_routes_campaign ON public.tourist_routes(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_tourist_routes_type ON public.tourist_routes(route_type);
 
--- 15. TABLA route_stops
 CREATE TABLE IF NOT EXISTS public.route_stops (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id uuid NOT NULL REFERENCES public.tourist_routes(id) ON DELETE CASCADE,
@@ -258,7 +238,6 @@ CREATE TABLE IF NOT EXISTS public.route_stops (
 );
 CREATE INDEX IF NOT EXISTS idx_route_stops_route ON public.route_stops(route_id);
 
--- 16. TABLA user_route_completions
 CREATE TABLE IF NOT EXISTS public.user_route_completions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id uuid NOT NULL REFERENCES public.tourist_routes(id) ON DELETE CASCADE,
@@ -273,7 +252,6 @@ CREATE TABLE IF NOT EXISTS public.user_route_completions (
 );
 CREATE INDEX IF NOT EXISTS idx_user_route_completions_user ON public.user_route_completions(user_identifier);
 
--- 17. TABLA marketplace_packages
 CREATE TABLE IF NOT EXISTS public.marketplace_packages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   template_id uuid NOT NULL REFERENCES public.templates(id) ON DELETE CASCADE,
@@ -299,7 +277,6 @@ CREATE TABLE IF NOT EXISTS public.marketplace_packages (
 CREATE INDEX IF NOT EXISTS idx_marketplace_packages_template ON public.marketplace_packages(template_id);
 CREATE INDEX IF NOT EXISTS idx_marketplace_packages_code ON public.marketplace_packages(package_code);
 
--- 18. TABLA campaign_installations
 CREATE TABLE IF NOT EXISTS public.campaign_installations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   package_id uuid NOT NULL REFERENCES public.marketplace_packages(id) ON DELETE CASCADE,
@@ -311,7 +288,6 @@ CREATE TABLE IF NOT EXISTS public.campaign_installations (
 );
 CREATE INDEX IF NOT EXISTS idx_campaign_installations_campaign ON public.campaign_installations(campaign_id);
 
--- 19. SEMILLAS DE DATOS BASE
 INSERT INTO public.templates (code, name, category, description)
 VALUES
   ('BARRIOS', 'LokiTrono Barrios', 'competition', 'Competicion de barrios y gamificacion'),
@@ -320,7 +296,6 @@ VALUES
   ('EVENT_HUB', 'Portal de Eventos', 'events', 'Agregador de agenda cultural')
 ON CONFLICT (code) DO NOTHING;
 
--- 20. HABILITAR ROW LEVEL SECURITY (RLS)
 ALTER TABLE public.templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.campaign_theme ENABLE ROW LEVEL SECURITY;
@@ -340,7 +315,6 @@ ALTER TABLE public.user_route_completions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.marketplace_packages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.campaign_installations ENABLE ROW LEVEL SECURITY;
 
--- 21. POLÍTICAS DE LECTURA PÚBLICA (IDEMPOTENTES)
 DROP POLICY IF EXISTS "p_templates_read" ON public.templates;
 CREATE POLICY "p_templates_read" ON public.templates FOR SELECT USING (is_active = true);
 
